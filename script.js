@@ -13,7 +13,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 
 class Workout {
   date = new Date();
-  id = (this.date.now() + '').slice(-4);
+  id = (Date.now() + '').slice(-4);
   constructor(coords, distance, duration) {
     this.coords = coords;
     this.distance = distance;
@@ -33,6 +33,8 @@ class Running extends Workout {
   }
 }
 
+const run1 = new Running([2222, 333], 500, 3, 50);
+console.log(run1);
 class Cycling extends Workout {
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration);
