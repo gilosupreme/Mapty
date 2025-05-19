@@ -33,8 +33,6 @@ class Running extends Workout {
   }
 }
 
-const run1 = new Running([2222, 333], 500, 3, 50);
-console.log(run1);
 class Cycling extends Workout {
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration);
@@ -50,6 +48,7 @@ class Cycling extends Workout {
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
 
   constructor() {
     this._getPosition();
@@ -102,13 +101,49 @@ class App {
   _newWorkOut(fe) {
     fe.preventDefault();
 
+    let workOut;
+    const { lat, lng } = this.#mapEvent.latlng;
+
+    const validInputs = (...inputs) =>
+      inputs.every(input => Number.isFinite(input));
+    const positiveInputs = (...inputs) => inputs.every(input => input > 0);
+
+    if (inputType.value == 'running') {
+      const cadence = +inputCadence.value;
+      const duration = +inputDuration.value;
+      const distance = +inputDistance.value;
+
+      if (
+        !validInputs(distance, duration, cadence) ||
+        !positiveInputs(distance, duration, cadence)
+      )
+        return alert('All Numbers MUST be positive');
+
+      workOut = new Running([lat, lng], distance, duration, cadence);
+    }
+
+    if (inputType.value == 'cycling') {
+      const elevation = +inputElevation.value;
+
+      const duration = +inputDuration.value;
+      const distance = +inputDistance.value;
+
+      if (
+        !validInputs(distance, duration, elevation) ||
+        !positiveInputs(distance, duration)
+      )
+        return alert('All Numbers MUST be positive');
+
+      workOut = new Cycling([lat, lng], distance, duration, elevation);
+    }
+
+    this.#workouts.push(workOut);
+
     inputDistance.value =
       inputDuration.value =
       inputCadence.value =
       inputElevation.value =
         ''; //clearing the field values after submit
-
-    const { lat, lng } = this.#mapEvent.latlng;
 
     L.marker([lat, lng])
       .addTo(this.#map)
@@ -123,6 +158,8 @@ class App {
       )
       .setPopupContent('You worked out here')
       .openPopup();
+
+    form.classList.add('hidden');
   }
 }
 
