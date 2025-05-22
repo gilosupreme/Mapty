@@ -158,9 +158,6 @@ class App {
 
     this.#workouts.push(workout);
 
-    //prettier-ignore
-    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ''; //clearing the field values after submit
-
     L.marker([lat, lng])
       .addTo(this.#map)
       .bindPopup(
@@ -177,7 +174,18 @@ class App {
       )
       .openPopup();
 
+    this._hideForm();
+  }
+
+  _hideForm() {
+    //prettier-ignore
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ''; //clearing the field values after submit
+    form.style.display = 'none';
     form.classList.add('hidden');
+
+    setTimeout(() => {
+      form.style.display = 'grid';
+    }, 1000);
   }
 
   _renderWorkout(workout) {
