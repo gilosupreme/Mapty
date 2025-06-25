@@ -11,6 +11,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-4);
+  clicks = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords;
@@ -24,6 +25,10 @@ class Workout {
     // prettier-ignore
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${months[this.date.getMonth()]} ${this.date.getDate()}`;
     return this.description;
+  }
+
+  click() {
+    this.clicks++;
   }
 }
 
@@ -60,6 +65,7 @@ class App {
   #map;
   #mapEvent;
   #workouts = [];
+  #zoom = 16;
 
   constructor() {
     this._getPosition();
@@ -67,6 +73,7 @@ class App {
     form.addEventListener('submit', this._newWorkOut.bind(this));
 
     inputType.addEventListener('change', this._toggleElevationField);
+    containerWorkouts.addEventListener('click', this._moveToWorkOut.bind(this));
   }
 
   _getPosition() {
@@ -88,7 +95,7 @@ class App {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
 
-    this.#map = L.map('map').setView([latitude, longitude], 16);
+    this.#map = L.map('map').setView([latitude, longitude], this.#zoom);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
@@ -211,7 +218,7 @@ class App {
           <div class="workout__details">
             <span class="workout__icon">⚡️</span>
             <span class="workout__value">${workout.pace.toFixed(1)}</span>
-            <span class="workout__unit">min/km</span>
+            <span class="workout__unit">km/min</span>
           </div>
           <div class="workout__details">
             <span class="workout__icon">🦶🏼</span>
@@ -239,6 +246,26 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToWorkOut(e) {
+    const element = e.target.closest('.workout');
+
+    if (!element) return; //Guard Clause
+
+    const workoutID = element.dataset.id;
+    const workoutPopup = this.#workouts.find(
+      workout => workout.id === workoutID
+    );
+
+    this.#map.setView(workoutPopup.coords, this.#zoom, {
+      animate: true,
+      pan: {
+        duration: 0.8,
+      },
+    });
+
+    workoutPopup.click(); //using the public interface of the Workout Class
   }
 }
 
