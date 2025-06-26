@@ -165,21 +165,7 @@ class App {
 
     this.#workouts.push(workout);
 
-    L.marker([lat, lng])
-      .addTo(this.#map)
-      .bindPopup(
-        L.popup({
-          maxWidth: 250,
-          minWidth: 100,
-          autoClose: false,
-          closeOnClick: false,
-          className: `${type}-popup`,
-        })
-      )
-      .setPopupContent(
-        `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'}${workout.description}`
-      )
-      .openPopup();
+    this._renderMarker(workout);
 
     this._hideForm();
   }
@@ -246,6 +232,24 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _renderMarker(workout) {
+    L.marker(workout.coords)
+      .addTo(this.#map)
+      .bindPopup(
+        L.popup({
+          maxWidth: 250,
+          minWidth: 100,
+          autoClose: false,
+          closeOnClick: false,
+          className: `${workout.type}-popup`,
+        })
+      )
+      .setPopupContent(
+        `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'}${workout.description}`
+      )
+      .openPopup();
   }
 
   _moveToWorkOut(e) {
