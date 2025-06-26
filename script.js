@@ -167,6 +167,8 @@ class App {
 
     this._renderMarker(workout);
 
+    this._setLocalStorage();
+
     this._hideForm();
   }
 
@@ -270,6 +272,11 @@ class App {
     });
 
     workoutPopup.click(); //using the public interface of the Workout Class
+  }
+
+  _setLocalStorage() {
+    const workouts = JSON.stringify(this.#workouts);
+    localStorage.setItem('workouts', workouts);
   }
 }
 
